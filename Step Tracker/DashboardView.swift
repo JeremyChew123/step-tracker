@@ -94,6 +94,8 @@ struct DashboardView: View {
             }
             .padding()
             .task {
+                //await hkManager.fetchStepCount()
+                await hkManager.fetchWeights()
                 isShowingPermissionSheet = !hasSeenPermissionPriming
             }
             .navigationTitle("Dashboard")
