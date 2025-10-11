@@ -36,9 +36,6 @@ struct StepPieChart: View {
             .padding(.bottom, 12)
             
             Chart {
-                if let rawSelectedChartValue {
-                    
-                }
                 
                 ForEach(chartData) {weekday in
                     SectorMark(angle: .value("Average Steps", weekday.value),
