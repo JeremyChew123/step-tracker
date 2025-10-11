@@ -13,6 +13,9 @@ import Observation
     let store = HKHealthStore()
     let types: Set = [HKQuantityType(.stepCount), HKQuantityType(.bodyMass)]
     
+    var stepData: [HealthMetric] = []
+    var weightData: [HealthMetric] = []
+    
     func fetchStepCount() async {
         let calendar = Calendar.current //current means the user's calendar
         let today = calendar.startOfDay(for: .now)
@@ -25,10 +28,13 @@ import Observation
         
         let stepsQuery = HKStatisticsCollectionQueryDescriptor(predicate: samplePredicate, options: .cumulativeSum, anchorDate: endDate, intervalComponents: .init(day:1))
         
-        let stepCount = try! await stepsQuery.result(for: store)
-        
-        for steps in stepCount.statistics() {
-            print(steps.sumQuantity() ?? 0)
+        do {
+            let stepCounts = try await stepsQuery.result(for: store)
+            stepData = stepCounts.statistics().map {
+                .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
+            }
+        } catch {
+            
         }
     }
     
@@ -44,10 +50,13 @@ import Observation
         
         let weightQuery = HKStatisticsCollectionQueryDescriptor(predicate: samplePredicate, options: .mostRecent, anchorDate: endDate, intervalComponents: .init(day:1))
         
-        let weights = try! await weightQuery.result(for: store)
-        
-        for weight in weights.statistics() {
-            print(weight.mostRecentQuantity() ?? 0)
+        do {
+            let weights = try await weightQuery.result(for: store)
+            weightData = weights.statistics().map {
+                .init(date: startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
+            }
+        } catch {
+            
         }
     }
     
@@ -56,7 +65,7 @@ import Observation
 //        
 //        var mockSamples: [HKQuantitySample] = []
 //        
-//        for i in 0..<28 {
+//        for i in 0..<2 {
 //            
 //            let stepQuantity = HKQuantity(unit: .count(), doubleValue: .random(in: 4_000...20_000))
 //            let weightQuantity = HKQuantity(unit: .pound(), doubleValue: .random(in: 160 + Double(i/3)...200 + Double(i/3)))
