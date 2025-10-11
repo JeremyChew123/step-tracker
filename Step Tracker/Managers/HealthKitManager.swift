@@ -53,7 +53,7 @@ import Observation
         do {
             let weights = try await weightQuery.result(for: store)
             weightData = weights.statistics().map {
-                .init(date: startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
+                .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
             }
         } catch {
             
