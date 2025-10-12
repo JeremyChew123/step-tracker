@@ -46,14 +46,24 @@ struct DashboardView: View {
                     }
                     .pickerStyle(.segmented)
                     
-                    StepBarChart(chartData: hkManager.stepData, selectedStat: selectedStat)
-                    StepPieChart(chartData: ChartMath.averageWeekdayCount(for: hkManager.stepData))
+                    switch selectedStat {
+                    case .steps:
+                        StepBarChart(chartData: hkManager.stepData, selectedStat: selectedStat)
+                        StepPieChart(chartData: ChartMath.averageWeekdayCount(for: hkManager.stepData))
+                    case .weight:
+                        WeightLineChart(chartData: hkManager.weightData, selectedStat: selectedStat)
+                        WeightDiffBarChart(chartData: ChartMath.averageDailyWeightDiffs(for: hkManager.weightDiffData))
+                    }
+                    
+                    
+                    
                 }
             }
             .padding()
             .task {
                 await hkManager.fetchStepCount()
                 await hkManager.fetchWeights()
+                await hkManager.fetchWeightsForDifferentials()
                 isShowingPermissionSheet = !hasSeenPermissionPriming
             }
             .navigationTitle("Dashboard")
