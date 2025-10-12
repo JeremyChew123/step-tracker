@@ -57,14 +57,26 @@ struct HealthDataListView: View {
                     Button("Add Data") {
                         Task {
                             if metric == .steps {
-                                await hkManager.addStepData(for: addDataDate, value: Double(valueToAdd)!)
-                                await hkManager.fetchStepCount()
-                                isShowingAddDate = false
+                                do {
+                                    try await hkManager.addStepData(for: addDataDate, value: Double(valueToAdd)!)
+                                    try await hkManager.fetchStepCount()
+                                    isShowingAddDate = false
+                                } catch STError.sharingDenied(let quantityType) {
+                                    print("❌ Sharing denied for \(quantityType)")
+                                } catch {
+                                    
+                                }
                             } else {
-                                await hkManager.addStepData(for: addDataDate, value: Double(valueToAdd)!)
-                                await hkManager.fetchWeights()
-                                await hkManager.fetchWeightsForDifferentials()
-                                isShowingAddDate = false
+                                do {
+                                    try await hkManager.addStepData(for: addDataDate, value: Double(valueToAdd)!)
+                                    try await hkManager.fetchWeights()
+                                    try await hkManager.fetchWeightsForDifferentials()
+                                    isShowingAddDate = false
+                                } catch STError.sharingDenied(let quantityType) {
+                                    print("❌ Sharing denied for \(quantityType)")
+                                } catch {
+                                    
+                                }
                             }
                         }
                     }
