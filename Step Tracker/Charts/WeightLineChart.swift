@@ -31,7 +31,7 @@ struct WeightLineChart: View {
             NavigationLink(value: selectedStat){
                 HStack {
                     VStack(alignment: .leading) {
-                        Label("Weight", systemImage: "figure.walk")
+                        Label("Weight", systemImage: "figure")
                             .font(.title3.bold())
                             .foregroundStyle(.indigo)
                         
