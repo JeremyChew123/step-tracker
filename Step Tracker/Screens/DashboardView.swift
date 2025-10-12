@@ -26,6 +26,8 @@ struct DashboardView: View {
     @Environment(HealthKitManager.self) private var hkManager
     @State private var isShowingPermissionSheet = false
     @State private var selectedStat: HealthMetricContext = .steps
+    @State private var isShowingAlert: Bool = false
+    @State private var fetchError: STError = .noData
     
     var isSteps: Bool { selectedStat == .steps}
     
@@ -66,9 +68,11 @@ struct DashboardView: View {
                 } catch STError.authNotDetermined{
                     isShowingPermissionSheet = true
                 } catch STError.noData {
-                    print("❌ No Data Error")
+                    fetchError = .noData
+                    isShowingAlert = true
                 } catch {
-                    print("❌ Unable to fulfill request")
+                    fetchError = .unableToCompleteRequest
+                    isShowingAlert = true
                 }
             }
             .navigationTitle("Dashboard")
@@ -80,6 +84,11 @@ struct DashboardView: View {
             }, content: {
                 HealthKitPermissionPrimingView()
             })
+            .alert(isPresented: $isShowingAlert, error: fetchError) {fetchError in
+                //action buttons
+            } message: {fetchError in
+                Text(fetchError.failureReason)
+            }
         }
         .tint(isSteps ? .pink : .indigo)
     }
