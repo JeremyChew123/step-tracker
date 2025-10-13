@@ -11,11 +11,11 @@ import Algorithms
 struct ChartMath {
 
     //static because you can use this function on ChartMath itself and not just an instance
-    static func averageWeekdayCount(for metric: [HealthMetric]) -> [WeeklyChartData] {
+    static func averageWeekdayCount(for metric: [HealthMetric]) -> [DateValueChartData] {
         let sortedByWeekday = metric.sorted { $0.date.weekdayInt < $1.date.weekdayInt}
         let weekdayArray = sortedByWeekday.chunked {$0.date.weekdayInt == $1.date.weekdayInt}
         
-        var weeklyChartData: [WeeklyChartData] = []
+        var weeklyChartData: [DateValueChartData] = []
         
         for array in weekdayArray {
             guard let firstValue = array.first else { continue }
@@ -27,7 +27,7 @@ struct ChartMath {
         return weeklyChartData
     }
     
-    static func averageDailyWeightDiffs(for metric: [HealthMetric]) -> [WeeklyChartData] {
+    static func averageDailyWeightDiffs(for metric: [HealthMetric]) -> [DateValueChartData] {
         var diffValues: [(date: Date, value: Double)] = []
         
         guard metric.count > 1 else { return []}
@@ -42,7 +42,7 @@ struct ChartMath {
         let sortByWeekday = diffValues.sorted { $0.date.weekdayInt < $1.date.weekdayInt}
         let weekdayArray = sortByWeekday.chunked {$0.date.weekdayInt == $1.date.weekdayInt}
         
-        var weeklyChartData: [WeeklyChartData] = []
+        var weeklyChartData: [DateValueChartData] = []
         
         for array in weekdayArray {
             guard let firstValue = array.first else { continue }
