@@ -47,48 +47,51 @@ struct WeightLineChart: View {
                 .padding(.bottom, 12)
             }
             .foregroundStyle(.secondary)
-            
-            Chart {
-                if let selectedHealthMetric {
-                    RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
-                        .foregroundStyle(Color.secondary.opacity(0.3))
-                        .offset(y: -10)
-                        .annotation(position: .top, spacing: 0, overflowResolution: .init(x: .fit(to: .chart) , y: .disabled)) {
-                            annotationView
-                        }
-                        
-                }
-                
-                RuleMark(y: .value("Goal", 155))
-                    .foregroundStyle(.mint)
-                    .lineStyle(.init(lineWidth: 1, dash: [5]))
-                
-                ForEach(chartData) { weight in
-                    AreaMark(x: .value("Day", weight.date, unit: .day),
-                             yStart: .value("weight", weight.value),
-                             yEnd: .value("Min Value", minValue))
-                    .foregroundStyle(Gradient(colors: [.indigo.opacity(0.5),.clear]))
+            if chartData.isEmpty{
+                ChartEmptyView(systemImageName: "chart.line.downtrend.xyaxis", title: "No Data", description: "There is no weight data in the from the Health App")
+            } else {
+                Chart {
+                    if let selectedHealthMetric {
+                        RuleMark(x: .value("Selected Metric", selectedHealthMetric.date, unit: .day))
+                            .foregroundStyle(Color.secondary.opacity(0.3))
+                            .offset(y: -10)
+                            .annotation(position: .top, spacing: 0, overflowResolution: .init(x: .fit(to: .chart) , y: .disabled)) {
+                                annotationView
+                            }
+                            
+                    }
                     
-                    LineMark(x: .value("Day", weight.date, unit: .day),
-                             y: .value("Weight", weight.value))
-                    .foregroundStyle(.indigo)
-                    .interpolationMethod(.catmullRom)
-                    .symbol(.circle)
+                    RuleMark(y: .value("Goal", 155))
+                        .foregroundStyle(.mint)
+                        .lineStyle(.init(lineWidth: 1, dash: [5]))
+                    
+                    ForEach(chartData) { weight in
+                        AreaMark(x: .value("Day", weight.date, unit: .day),
+                                 yStart: .value("weight", weight.value),
+                                 yEnd: .value("Min Value", minValue))
+                        .foregroundStyle(Gradient(colors: [.indigo.opacity(0.5),.clear]))
+                        
+                        LineMark(x: .value("Day", weight.date, unit: .day),
+                                 y: .value("Weight", weight.value))
+                        .foregroundStyle(.indigo)
+                        .interpolationMethod(.catmullRom)
+                        .symbol(.circle)
+                    }
                 }
-            }
-            .frame(height: 150)
-            .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
-            .chartYScale(domain: .automatic(includesZero: false))
-            .chartXAxis{
-                AxisMarks {
-                    AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
+                .frame(height: 150)
+                .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
+                .chartYScale(domain: .automatic(includesZero: false))
+                .chartXAxis{
+                    AxisMarks {
+                        AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
+                    }
                 }
-            }
-            .chartYAxis {
-                AxisMarks { value in
-                    AxisGridLine()
-                        .foregroundStyle(Color.secondary.opacity(0.3))
-                    AxisValueLabel()
+                .chartYAxis {
+                    AxisMarks { value in
+                        AxisGridLine()
+                            .foregroundStyle(Color.secondary.opacity(0.3))
+                        AxisValueLabel()
+                    }
                 }
             }
         }
