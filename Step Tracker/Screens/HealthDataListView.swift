@@ -51,6 +51,7 @@ struct HealthDataListView: View {
                         .multilineTextAlignment(.trailing)
                         .frame(width: 140)
                         .keyboardType(metric == .steps ? .numberPad : .decimalPad)
+                    
                 }
             }
             .navigationTitle(metric.title)
