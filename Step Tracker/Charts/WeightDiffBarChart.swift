@@ -13,13 +13,10 @@ struct WeightDiffBarChart: View {
     @State private var rawSelectedDate: Date?
     @State private var selectedDay: Date?
     
-    var chartData: [WeeklyChartData]
+    var chartData: [DateValueChartData]
     
-    var selectedData: WeeklyChartData? {
-        guard let rawSelectedDate else { return nil }
-        return chartData.first(where: {
-            Calendar.current.isDate($0.date, inSameDayAs: rawSelectedDate)
-        })
+    var selectedData: DateValueChartData? {
+        ChartHelper.parseSelectedDate(for: chartData, in: rawSelectedDate)
     }
     
     var body: some View {
@@ -35,7 +32,9 @@ struct WeightDiffBarChart: View {
                             .annotation(position: .top,
                                         spacing: 0,
                                         overflowResolution: .init(x: .fit(to: .chart), y: .disabled))
-                                        {annotationView}
+                                        {
+                                            ChartAnnotationView(data: selectedData, context: .weight)
+                                        }
                     }
                     
                     ForEach(chartData) { weightDiff in
@@ -68,22 +67,6 @@ struct WeightDiffBarChart: View {
                 selectedDay = newValue
             }
         }
-    }
-    var annotationView: some View {
-        VStack(alignment: .leading) {
-            Text(selectedData?.date ?? .now, format:
-                    .dateTime.weekday(.abbreviated).month(.abbreviated).day())
-            .font(.footnote.bold())
-            .foregroundStyle(.secondary)
-            
-            Text(selectedData?.value ?? 0, format: .number.precision(.fractionLength(2)))
-                .fontWeight(.heavy)
-                .foregroundStyle((selectedData?.value ?? 0) <= 0 ? .mint : .indigo)
-        }
-        .padding(12)
-        .background(RoundedRectangle(cornerRadius: 4)
-            .fill(Color(.secondarySystemBackground))
-            .shadow(color: .blue.opacity(0.3), radius: 2, x: 2, y: 2))
     }
 }
 
