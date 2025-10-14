@@ -23,10 +23,10 @@ struct HealthDataListView: View {
     
     var body: some View {
         List(listData.reversed()) {data in
-            HStack {
-                Text(data.date, format: .dateTime.month().day().year())
-                Spacer()
+            LabeledContent {
                 Text(data.value, format: .number.precision(.fractionLength(metric == .steps ? 0 : 1)))
+            } label: {
+                Text(data.date, format: .dateTime.month().day().year())
             }
         }
         .navigationTitle(metric.title)
@@ -44,14 +44,11 @@ struct HealthDataListView: View {
         NavigationStack { //need for title and toolbar
             Form {
                 DatePicker("Date", selection: $addDataDate, displayedComponents: .date)
-                HStack {
-                    Text(metric.title)
-                    Spacer()
+                LabeledContent(metric.title) {
                     TextField("Value", text: $valueToAdd)
                         .multilineTextAlignment(.trailing)
                         .frame(width: 140)
                         .keyboardType(metric == .steps ? .numberPad : .decimalPad)
-                    
                 }
             }
             .navigationTitle(metric.title)

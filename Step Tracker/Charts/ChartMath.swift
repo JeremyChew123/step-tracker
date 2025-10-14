@@ -12,7 +12,7 @@ struct ChartMath {
 
     //static because you can use this function on ChartMath itself and not just an instance
     static func averageWeekdayCount(for metric: [HealthMetric]) -> [DateValueChartData] {
-        let sortedByWeekday = metric.sorted { $0.date.weekdayInt < $1.date.weekdayInt}
+        let sortedByWeekday = metric.sorted(using: KeyPathComparator(\.date.weekdayInt))
         let weekdayArray = sortedByWeekday.chunked {$0.date.weekdayInt == $1.date.weekdayInt}
         
         var weeklyChartData: [DateValueChartData] = []
@@ -39,7 +39,7 @@ struct ChartMath {
             print(diffValues)
         }
         print(diffValues)
-        let sortByWeekday = diffValues.sorted { $0.date.weekdayInt < $1.date.weekdayInt}
+        let sortByWeekday = diffValues.sorted(using: KeyPathComparator(\.date.weekdayInt))
         let weekdayArray = sortByWeekday.chunked {$0.date.weekdayInt == $1.date.weekdayInt}
         
         var weeklyChartData: [DateValueChartData] = []
