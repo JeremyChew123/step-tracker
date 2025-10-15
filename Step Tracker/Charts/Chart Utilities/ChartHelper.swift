@@ -1,21 +1,33 @@
 //
-//  ChartMath.swift
+//  ChartHelper.swift
 //  Step Tracker
 //
-//  Created by Jeremy Chew on 9/10/25.
+//  Created by Jeremy Chew on 13/10/25.
 //
 
 import Foundation
 import Algorithms
 
-struct ChartMath {
-
+struct ChartHelper {
+    static func convert(data: [HealthMetric]) -> [DateValueChartData] {
+        data.map {
+            .init(date: $0.date, value: $0.value)
+        }
+    }
+    
+    static func parseSelectedDate(for data: [DateValueChartData], in selectedDate: Date?) -> DateValueChartData? {
+        guard let selectedDate else { return nil }
+        return data.first(where: {
+            Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
+        })
+    }
+    
     //static because you can use this function on ChartMath itself and not just an instance
-    static func averageWeekdayCount(for metric: [HealthMetric]) -> [WeeklyChartData] {
-        let sortedByWeekday = metric.sorted { $0.date.weekdayInt < $1.date.weekdayInt}
+    static func averageWeekdayCount(for metric: [HealthMetric]) -> [DateValueChartData] {
+        let sortedByWeekday = metric.sorted(using: KeyPathComparator(\.date.weekdayInt))
         let weekdayArray = sortedByWeekday.chunked {$0.date.weekdayInt == $1.date.weekdayInt}
         
-        var weeklyChartData: [WeeklyChartData] = []
+        var weeklyChartData: [DateValueChartData] = []
         
         for array in weekdayArray {
             guard let firstValue = array.first else { continue }
@@ -27,7 +39,7 @@ struct ChartMath {
         return weeklyChartData
     }
     
-    static func averageDailyWeightDiffs(for metric: [HealthMetric]) -> [WeeklyChartData] {
+    static func averageDailyWeightDiffs(for metric: [HealthMetric]) -> [DateValueChartData] {
         var diffValues: [(date: Date, value: Double)] = []
         
         guard metric.count > 1 else { return []}
@@ -39,10 +51,10 @@ struct ChartMath {
             print(diffValues)
         }
         print(diffValues)
-        let sortByWeekday = diffValues.sorted { $0.date.weekdayInt < $1.date.weekdayInt}
+        let sortByWeekday = diffValues.sorted(using: KeyPathComparator(\.date.weekdayInt))
         let weekdayArray = sortByWeekday.chunked {$0.date.weekdayInt == $1.date.weekdayInt}
         
-        var weeklyChartData: [WeeklyChartData] = []
+        var weeklyChartData: [DateValueChartData] = []
         
         for array in weekdayArray {
             guard let firstValue = array.first else { continue }
