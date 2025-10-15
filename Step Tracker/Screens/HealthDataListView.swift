@@ -94,7 +94,7 @@ struct HealthDataListView: View {
                     try await hkManager.addStepData(for: addDataDate, value: value)
                     hkManager.stepData = try await hkManager.fetchStepCount()
                 } else {
-                    try await hkManager.addStepData(for: addDataDate, value: value)
+                    try await hkManager.addWeightData(for: addDataDate, value: value)
                     async let weightsForLineChart = hkManager.fetchWeights(daysBack: 28)
                     async let weightsForDiffBarChart = hkManager.fetchWeights(daysBack: 29)
                     

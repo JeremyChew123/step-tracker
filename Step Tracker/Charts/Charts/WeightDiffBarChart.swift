@@ -35,7 +35,7 @@ struct WeightDiffBarChart: View {
                         .foregroundStyle(weightDiff.value <= 0 ? Color.mint.gradient : Color.indigo.gradient)
                     }
                     .accessibilityLabel(weightDiff.date.weekdayTitle) //x-axis
-                    .accessibilityLabel("\(weightDiff.value.formatted(.number.precision(.fractionLength(1))sign(strategy: .always))) KG")
+                    .accessibilityLabel("\(weightDiff.value.formatted(.number.precision(.fractionLength(1)).sign(strategy: .always()))) KG")
                 }
             }
             .frame(height: 150)
