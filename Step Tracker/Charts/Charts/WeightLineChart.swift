@@ -23,26 +23,26 @@ struct WeightLineChart: View {
         chartData.map {$0.value}.min() ?? 0
     }
     
+    var average: Double {
+        chartData.map { $0.value }.average
+    }
+    
     var body: some View {
-        let config = ChartContainerConfiguration(title: "Weight",
-                                                 symbol: "figure",
-                                                 subtitle: "Avg: 75KG",
-                                                 context: .weight,
-                                                 isNav: true)
-        ChartContainer(config: config) {
-            if chartData.isEmpty{
-                ChartEmptyView(systemImageName: "chart.line.downtrend.xyaxis", title: "No Data", description: "There is no weight data in the from the Health App")
-            } else {
-                Chart {
-                    if let selectedData {
-                        ChartAnnotationView(data: selectedData, context: .weight)
-                    }
-                    
+
+        ChartContainer(chartType: .weightLine(average: average)) {
+            Chart {
+                if let selectedData {
+                    ChartAnnotationView(data: selectedData, context: .weight)
+                }
+                
+                if !chartData.isEmpty {
                     RuleMark(y: .value("Goal", 75))
                         .foregroundStyle(.mint)
                         .lineStyle(.init(lineWidth: 1, dash: [5]))
-                    
-                    ForEach(chartData) { weight in
+                        .accessibilityHidden(true)
+                }
+                ForEach(chartData) { weight in
+                    Plot {
                         AreaMark(x: .value("Day", weight.date, unit: .day),
                                  yStart: .value("weight", weight.value),
                                  yEnd: .value("Min Value", minValue))
@@ -54,21 +54,28 @@ struct WeightLineChart: View {
                         .interpolationMethod(.catmullRom)
                         .symbol(.circle)
                     }
+                    .accessibilityLabel(weight.date.accesibilityDate) //x-axis
+                    .accessibilityLabel("\(weight.value.formatted(.number.precision(.fractionLength(1)))) KG")
                 }
-                .frame(height: 150)
-                .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
-                .chartYScale(domain: .automatic(includesZero: false))
-                .chartXAxis{
-                    AxisMarks {
-                        AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
-                    }
+            }
+            .frame(height: 150)
+            .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
+            .chartYScale(domain: .automatic(includesZero: false))
+            .chartXAxis{
+                AxisMarks {
+                    AxisValueLabel(format: .dateTime.month(.defaultDigits).day())
                 }
-                .chartYAxis {
-                    AxisMarks { value in
-                        AxisGridLine()
-                            .foregroundStyle(Color.secondary.opacity(0.3))
-                        AxisValueLabel()
-                    }
+            }
+            .chartYAxis {
+                AxisMarks { value in
+                    AxisGridLine()
+                        .foregroundStyle(Color.secondary.opacity(0.3))
+                    AxisValueLabel()
+                }
+            }
+            .overlay {
+                if chartData.isEmpty{
+                    ChartEmptyView(systemImageName: "chart.line.downtrend.xyaxis", title: "No Data", description: "There is no weight data in the from the Health App")
                 }
             }
         }
